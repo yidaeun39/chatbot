@@ -6,7 +6,6 @@
 - [예제 - 챗봇 시스템](#---)
   - [서비스 시나리오](#서비스-시나리오)
   - [클라우드 아키텍처 구성도](#클라우드-아키텍처-구성도)
-  - [MSA 아키텍처 구성도](#MSA-아키텍처-구성도)
   - [Event Storming](#Event-Storming)
   - [구현:](#구현-)
     - [DDD의 적용](#DDD의-적용)
@@ -49,16 +48,14 @@
     1. 대시보드를 통해 해당 상품의 질문 건 수와 요청 건 수를 확인 할 수 있다
 
 
-# Event Storming
-![image](https://github.com/yidaeun39/chatbot/assets/47437659/caeb38b1-a7a0-408b-90fc-7bd4506da6f5)
-![image](https://github.com/yidaeun39/chatbot/assets/47437659/bc5fbd57-f803-4540-a6db-f8fa43b65295)
-
 # 클라우드 아키텍처 구성도
  ## EDA 구성
  이벤트 드리븐 아키텍처에 따라 각 서비스 호출 시 비동기 방식으로 이루어질 수 있도록 구상하였다.
-
-# MSA 아키텍처 구성도
 ![image](https://github.com/yidaeun39/chatbot3/assets/47437659/766ce333-3f92-4610-8503-6a3aa91fe41e)
+
+# Event Storming
+![image](https://github.com/yidaeun39/chatbot/assets/47437659/caeb38b1-a7a0-408b-90fc-7bd4506da6f5)
+![image](https://github.com/yidaeun39/chatbot/assets/47437659/bc5fbd57-f803-4540-a6db-f8fa43b65295)
 
 *********
 
