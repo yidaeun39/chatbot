@@ -9,8 +9,8 @@
   - [MSA 아키텍처 구성도](#MSA-아키텍처-구성도)
   - [Event Storming](#Event-Storming)
   - [구현:](#구현-)
-    - [분산트랙잭션](#분산-트랙잭션)
-    - [폴리글랏 퍼시스턴스](#폴리글랏-퍼시스턴스)
+    - [DDD의 적용](#DDD의-적용)
+    - [Saga](#Saga)
     - [폴리글랏 프로그래밍](#폴리글랏-프로그래밍)
     - [동기식 호출 과 Fallback 처리](#동기식-호출-과-Fallback-처리)
     - [비동기식 호출 과 Eventual Consistency](#비동기식-호출-과-Eventual-Consistency)
@@ -74,7 +74,7 @@ cd marketing
 mvn spring-boot:run 
 ```
 
-## DDD 의 적용
+## DDD의 적용
 
 - 각 서비스내에 도출된 핵심 Aggregate Root 객체를 Entity 로 선언하였다. 
 
