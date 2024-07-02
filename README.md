@@ -26,7 +26,7 @@
 
 # 서비스 시나리오
 
-상품 구매/장바구니/조회수 별 추천 시스템 작성
+유저 챗봇 이용 시 데이터 수집 및 분석을 통해 마케팅 자동화
 
 기능적 요구사항
 1. 사용자가 ChatBot에 상품을 검색한다
@@ -58,6 +58,7 @@
  이벤트 드리븐 아키텍처에 따라 각 서비스 호출 시 비동기 방식으로 이루어질 수 있도록 구상하였다.
 
 # MSA 아키텍처 구성도
+![image](https://github.com/yidaeun39/chatbot3/assets/47437659/766ce333-3f92-4610-8503-6a3aa91fe41e)
 
 *********
 
@@ -164,8 +165,12 @@ http localhost:8083/trains
 - 키알리 캡처
 
 ## Dashboard
-데이터 정합성을 위한 Read Model인 CQRS 서비스를 생성한다.
-
+- 데이터 정합성을 위한 Read Model인 CQRS Dashboard 서비스를 설정한다.
+Train 데이터가 생성되며 Create되고, 마케터가 유저정보를 patched 할 때 Update 된다.
+```
+http PATH http://train:8083 id=1 productId=1 trainId=1
+http PATH http://train:8084 id=1 productId=1 trainId=1
+```
 
 *********
 
@@ -234,7 +239,7 @@ chat   Deployment/chat   6%/15%    1         10        10         15m
 ![image](https://github.com/yidaeun39/chatbot/assets/47437659/4b21d230-a49a-484c-8ed3-a32a8d2a8815)
 
 ## Loggregation
-- 키바나 로그인을 위해서 ID/PW 정보를 미리 수집해둔다.
+- Kibana Web Admin 접속을 위해서 ID/PW 정보를 미리 수집해둔다.
 ```
 id : elastic
 pw : kubectl get secrets --namespace=logging elasticsearch-master-credentials -ojsonpath='{.data.password}' | base64 -d
