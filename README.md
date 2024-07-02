@@ -11,9 +11,9 @@
   - [구현:](#구현-)
     - [DDD의 적용](#DDD의-적용)
     - [Saga](#Saga)
-    - [폴리글랏 프로그래밍](#폴리글랏-프로그래밍)
-    - [동기식 호출 과 Fallback 처리](#동기식-호출-과-Fallback-처리)
-    - [비동기식 호출 과 Eventual Consistency](#비동기식-호출-과-Eventual-Consistency)
+    - [Compensation Transaction](#Compensation-Transaction)
+    - [Gateway](#Gateway)
+    - [Dashboard](#Dashboard)
   - [운영](#운영)
     - [CI/CD 설정](#cicd설정)
     - [동기식 호출 / 서킷 브레이킹 / 장애격리](#동기식-호출-서킷-브레이킹-장애격리)
@@ -104,8 +104,12 @@ public class Chat {
 ```
 
 ## Saga
-- Event Shunting 비동기 호출을 위한 EDA로 Apache Kafka를 사용한다. 사용자가 chat 서비스에 상품을 검색/질문/요청 했을 때 이벤트 드리븐하게 로직이 실행되고, 이벤트가 카프카에서 확인된다.
+- Event Shunting 비동기 호출을 위한 EDA로 클러스터 내에 Apache Kafka를 설치한다. 사용자가 chat 서비스에 상품을 검색/질문/요청 했을 때 이벤트 드리븐하게 로직이 실행되고, 이벤트가 카프카에서 확인된다.
 ```
+helm repo add bitnami https://charts.bitnami.com/bitnami
+helm repo update
+helm install my-kafka bitnami/kafka --version 23.0.5
+
 docker-compose exec -it kafka /bin/bash
 cd /bin
 
@@ -151,7 +155,8 @@ http localhost:8083/trains
 ```
 
 ## Gateway
-- 트래픽 라우팅 룰
+- 상단 서비스 목록에서는 언급하지 않았지만 msaez에서 제공하는 gateway 서비스를 통해 트래픽 라우팅 룰을 정의한다.
+- 
 
 ## Dashboard
 데이터 정합성을 위한 Read Model인 CQRS 서비스를 생성한다. Microcks API를 사용하여 Mocking 기반 구현 패턴
@@ -162,10 +167,30 @@ http localhost:8083/trains
 
 # 운영
 
-## CI/CD 설정
+## 클라우드 배포 - Container 운영
 
+각 서비스들은 메이븐 빌드하여 docker hub에 업로드한다.
+![image](https://github.com/yidaeun39/chatbot/assets/47437659/ce35facd-8cd5-45a7-8cab-96df301504b2)
 
-각 구현체들은 각자의 source repository 에 구성되었고, 사용한 CI/CD 플랫폼은 GCP를 사용하였으며, pipeline build script 는 각 프로젝트 폴더 이하에 cloudbuild.yml 에 포함되었다.
+yaml 배포 방식을 통해 도커 이미지 주소를 설정하고 컨테이너에 배포한다. 
+```
+spec:
+      containers:
+        - name: chat
+          image: "yidaeun39/chat:v1"
+
+kubectl apply -f kubernetes/deployment.yaml
+```
+
+각 구현체들은 각자의 source repository 에 구성되었고, 사용한 CI/CD 플랫폼은 CodeBuild를 사용하였으며, pipeline build script 는 각 프로젝트 폴더 이하에 buildspec.yml 에 포함되었다.
+
+1. Amazon ECR에 각 프로젝트 명으로 리포지토리를 생성한다.
+![image](https://github.com/yidaeun39/chatbot/assets/47437659/4db86dd4-e026-4fba-9268-d7f16ba91b29)
+2. AWS CodeBuild를 통해 프로젝트를 구성한다. github를 사용하였기 때문에 소스공급자로 github를 선택한다. github 계정의 OAuth 요청 처리 후 프로젝트를 선택한다.
+![image](https://github.com/yidaeun39/chatbot/assets/47437659/277cd7d1-61e9-41dc-89b3-899a85d274bd)
+3. ServiceAcount 생성 후 어드민 토큰을 발급하여 필요한 환경변수를 추가한다.
+![image](https://github.com/yidaeun39/chatbot/assets/47437659/ad30e6be-693b-42e8-be61-066f3c22a257)
+
 
 
 ## 동기식 호출 / 서킷 브레이킹 / 장애격리
