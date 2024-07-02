@@ -19,7 +19,7 @@
     - [컨테이너 자동확장 - HPA](#컨네이터-자동확장---HPA)
     - [ConfigMap](#ConfigMap)
     - [PVC활용](#PVC활용)
-    - [무정지 재배포](#무정지-재배포)
+    - [Rediness 무정지 재배포](#Rediness-무정지-재배포)
     - [서비스 메쉬](#서비스-메쉬)
     - [Loggregation](#Loggregation)
 
@@ -225,72 +225,18 @@ chat   Deployment/chat   6%/15%    1         10        10         15m
 ![image](https://github.com/yidaeun39/chatbot/assets/47437659/b74a7fb4-4f43-4011-83c3-51630c396fea)
 ![image](https://github.com/yidaeun39/chatbot/assets/47437659/4b8e6f73-86b2-45ff-a1b6-2888db5168d3)
 
-
-## 무정지 재배포
-
-* 먼저 무정지 재배포가 100% 되는 것인지 확인하기 위해서 Autoscaler 이나 CB 설정을 제거함
-
-- seige 로 배포작업 직전에 워크로드를 모니터링 함.
-```
-siege -c100 -t120S -r10 --content-type "application/json" 'http://localhost:8081/orders POST {"item": "chicken"}'
-
-** SIEGE 4.0.5
-** Preparing 100 concurrent users for battle.
-The server is now under siege...
-
-HTTP/1.1 201     0.68 secs:     207 bytes ==> POST http://localhost:8081/orders
-HTTP/1.1 201     0.68 secs:     207 bytes ==> POST http://localhost:8081/orders
-HTTP/1.1 201     0.70 secs:     207 bytes ==> POST http://localhost:8081/orders
-HTTP/1.1 201     0.70 secs:     207 bytes ==> POST http://localhost:8081/orders
-:
-
-```
-
-- 새버전으로의 배포 시작
-```
-kubectl set image ...
-```
-
-- seige 의 화면으로 넘어가서 Availability 가 100% 미만으로 떨어졌는지 확인
-```
-Transactions:		        3078 hits
-Availability:		       70.45 %
-Elapsed time:		       120 secs
-Data transferred:	        0.34 MB
-Response time:		        5.60 secs
-Transaction rate:	       17.15 trans/sec
-Throughput:		        0.01 MB/sec
-Concurrency:		       96.02
-
-```
-배포기간중 Availability 가 평소 100%에서 70% 대로 떨어지는 것을 확인. 원인은 쿠버네티스가 성급하게 새로 올려진 서비스를 READY 상태로 인식하여 서비스 유입을 진행한 것이기 때문. 이를 막기위해 Readiness Probe 를 설정함:
-
-```
-# deployment.yaml 의 readiness probe 의 설정:
-
-
-kubectl apply -f kubernetes/deployment.yaml
-```
-
-- 동일한 시나리오로 재배포 한 후 Availability 확인:
-```
-Transactions:		        3078 hits
-Availability:		       100 %
-Elapsed time:		       120 secs
-Data transferred:	        0.34 MB
-Response time:		        5.60 secs
-Transaction rate:	       17.15 trans/sec
-Throughput:		        0.01 MB/sec
-Concurrency:		       96.02
-
-```
-
-배포기간 동안 Availability 가 변화없기 때문에 무정지 재배포가 성공한 것으로 확인됨.
-
+## Rediness 무정지 재배포
+- yaml에 readinessProbe 설정 후 seige로 배포작업 도중 워크로드를 모니터링 함으로서, Availability가 떨어지지 않고 100% 유지됐는지 확인한다. 
+![image](https://github.com/yidaeun39/chatbot/assets/47437659/dc242394-7a04-4d95-9716-5d4e0703676d)
 
 ## 서비스 메쉬
-- Istio를 통해 안정된 서비스와 배포전략을 시행한다. Istio를 통해 배포된 파드는 sidecar가 injection되어 (2/2)로 노출되는 것을 볼 수 있다.
+- Istio를 통해 안정된 서비스와 배포전략을 시행한다. Istio를 통해 배포된 파드는 sidecar가 injection되어 POD가 (2/2)로 노출되는 것을 확인할 수 있다.
 ![image](https://github.com/yidaeun39/chatbot/assets/47437659/4b21d230-a49a-484c-8ed3-a32a8d2a8815)
 
 ## Loggregation
-
+- 키바나 로그인을 위해서 ID/PW 정보를 미리 수집해둔다.
+```
+id : elastic
+pw : kubectl get secrets --namespace=logging elasticsearch-master-credentials -ojsonpath='{.data.password}' | base64 -d
+```
+![image](https://github.com/yidaeun39/chatbot/assets/47437659/6a7e3c64-8051-47d5-9b6f-fcb43ad30807)
