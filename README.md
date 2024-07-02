@@ -15,7 +15,7 @@
     - [Gateway](#Gateway)
     - [Dashboard](#Dashboard)
   - [운영](#운영)
-    - [CI/CD 설정](#cicd설정)
+    - [클라우드 배포](#클라우드-배포---Container-운영)
     - [동기식 호출 / 서킷 브레이킹 / 장애격리](#동기식-호출-서킷-브레이킹-장애격리)
     - [오토스케일 아웃](#오토스케일-아웃)
     - [무정지 재배포](#무정지-재배포)
@@ -183,6 +183,8 @@ kubectl apply -f kubernetes/deployment.yaml
 ```
 
 각 구현체들은 각자의 source repository 에 구성되었고, 사용한 CI/CD 플랫폼은 CodeBuild를 사용하였으며, pipeline build script 는 각 프로젝트 폴더 이하에 buildspec.yml 에 포함되었다.
+* 세팅 시 런타임 버전 확인 필요
+* https://docs.aws.amazon.com/ko_kr/codebuild/latest/userguide/build-env-ref-available.html
 
 1. Amazon ECR에 각 프로젝트 명으로 리포지토리를 생성한다.
 ![image](https://github.com/yidaeun39/chatbot/assets/47437659/4db86dd4-e026-4fba-9268-d7f16ba91b29)
@@ -190,8 +192,12 @@ kubectl apply -f kubernetes/deployment.yaml
 ![image](https://github.com/yidaeun39/chatbot/assets/47437659/277cd7d1-61e9-41dc-89b3-899a85d274bd)
 3. ServiceAcount 생성 후 어드민 토큰을 발급하여 필요한 환경변수를 추가한다.
 ![image](https://github.com/yidaeun39/chatbot/assets/47437659/ad30e6be-693b-42e8-be61-066f3c22a257)
-
-
+4. ECR에 이미지가 배포되었는지 확인.
+![image](https://github.com/yidaeun39/chatbot/assets/47437659/d989dada-8f28-4caf-b376-b4e7ebdd5604)
+6. git repository에서 push 작업 수행 후 정상적으로 자동 배포되는지 확인.
+![image](https://github.com/yidaeun39/chatbot/assets/47437659/11c2ad4f-6ae7-4ae0-a617-856587f19fb8)
+7. S3에 
+![image](https://github.com/yidaeun39/chatbot/assets/47437659/f819c477-40fb-4564-8d05-ec9d3f6fd6e8)
 
 ## 동기식 호출 / 서킷 브레이킹 / 장애격리
 
