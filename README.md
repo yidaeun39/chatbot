@@ -3,7 +3,7 @@
 
 # Table of contents
 
-- [예제 - 추천 시스템](#---)
+- [예제 - 챗봇 시스템](#---)
   - [서비스 시나리오](#서비스-시나리오)
   - [클라우드 아키텍처 구성도](#클라우드-아키텍처-구성도)
   - [MSA 아키텍처 구성도](#MSA-아키텍처-구성도)
@@ -47,8 +47,8 @@
 
 
 # Event Storming
- ![image](https://github.com/yidaeun39/food-delivery/assets/47437659/6d0fcc55-9070-4913-a6bf-f29c831857a9)
-![image](https://github.com/yidaeun39/food-delivery/assets/47437659/5e214e95-0c0d-46b5-a0da-cb9f0de3a243)
+![image](https://github.com/yidaeun39/chatbot/assets/47437659/caeb38b1-a7a0-408b-90fc-7bd4506da6f5)
+![image](https://github.com/yidaeun39/chatbot/assets/47437659/bc5fbd57-f803-4540-a6db-f8fa43b65295)
 
 # 클라우드 아키텍처 구성도
  ## EDA 구성
@@ -61,7 +61,7 @@
 분석/설계 단계에서 도출된 헥사고날 아키텍처에 따라, 각 BC별로 대변되는 마이크로 서비스들을 스프링부트와 JAVA로 구현하였다. 구현한 각 서비스를 로컬에서 실행하는 방법은 아래와 같다 (각자의 포트넘버는 8082 ~ 808n 이다)
 
 ```
-cd product
+cd chat
 mvn spring-boot:run
 
 cd train
@@ -79,12 +79,12 @@ mvn spring-boot:run
 - 각 서비스내에 도출된 핵심 Aggregate Root 객체를 Entity 로 선언하였다. 
 
 ```
-package autotrain.domain;
+package chatbot.domain;
 
 @Entity
-@Table(name = "Item_table")
+@Table(name = "Chat_table")
 @Data
-public class Item {
+public class Chat {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -92,33 +92,29 @@ public class Item {
 
     private String productId;
 
-    private String productName;
+    private String questionMsg;
 
-    private String productType;
+    private String requestMsg;
 
-    private Integer viewCnt;
-
-    private Integer orderCnt;
-
-    private String cartCnt;
+    private String requestType;
 
     private String userId;
-
 }
 
 ```
 
 ## Saga
-- Event Shunting 비동기 호출을 위한 EDA로 Apache Kafka를 사용한다.
+- Event Shunting 비동기 호출을 위한 EDA로 Apache Kafka를 사용한다. 사용자가 chat 서비스에 상품을 검색/질문/요청 했을 때 이벤트 드리븐하게 로직이 실행되고, 이벤트가 카프카에서 확인된다.
 ```
 docker-compose exec -it kafka /bin/bash
 cd /bin
 
 ./kafka-console-consumer --bootstrap-server localhost:9092 --topic labshoppubsub  --from-beginning
+
 ```
 
 ## Compensation Transaction
-- 사용자가 
+- 사용자가 Chat 서비스에서 상품의 요청 사항 작성 할 경우 Train 서비스 
 ```
 ```
 
