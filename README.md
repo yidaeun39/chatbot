@@ -17,7 +17,8 @@
   - [운영](#운영)
     - [클라우드 배포](#클라우드-배포---Container-운영)
     - [컨테이너 자동확장 - HPA](#컨네이터-자동확장---HPA)
-    - [오토스케일 아웃](#오토스케일-아웃)
+    - [ConfigMap](#ConfigMap)
+    - [PVC활용](#PVC활용)
     - [무정지 재배포](#무정지-재배포)
   - [신규 개발 조직의 추가](#신규-개발-조직의-추가)
 
@@ -55,6 +56,8 @@
  이벤트 드리븐 아키텍처에 따라 각 서비스 호출 시 비동기 방식으로 이루어질 수 있도록 구상하였다.
 
 # MSA 아키텍처 구성도
+
+*********
 
 # 구현:
 
@@ -123,8 +126,7 @@ http localhost:8083/trains
 ```
 ![image](https://github.com/yidaeun39/chatbot/assets/47437659/c5f07b0f-c80f-448d-8871-4cd514fe5c6b)
 ![image](https://github.com/yidaeun39/chatbot/assets/47437659/10bd0a66-612a-45d6-ab45-a26906960b00)
-
-- 
+ 
 
 ## Compensation Transaction
 - 사용자가 Chat 서비스에서 상품의 요청 사항을 작성 할 경우 Train 서비스에서 해당 요청이 가능한 요청인지 판단한다.
@@ -153,14 +155,14 @@ http localhost:8083/trains
       });
   }
 ```
+- 여기서 카프카 토픽 캡처 나오면 될듯
 
 ## Gateway
 - 상단 서비스 목록에서는 언급하지 않았지만 msaez에서 제공하는 gateway 서비스를 통해 트래픽 라우팅 룰을 정의한다.
-- 
+- 키알리 캡처
 
 ## Dashboard
-데이터 정합성을 위한 Read Model인 CQRS 서비스를 생성한다. Microcks API를 사용하여 Mocking 기반 구현 패턴
-
+데이터 정합성을 위한 Read Model인 CQRS 서비스를 생성한다.
 
 
 *********
@@ -212,37 +214,14 @@ NAME   REFERENCE         TARGETS   MINPODS   MAXPODS   REPLICAS   AGE
 chat   Deployment/chat   6%/15%    1         10        10         15m
 ```
 
+## ConfigMap
+- 환경설정 정보를 바꾸기 위해 전체 CI/CD 파이프라인을 태워 배포하는 것을 방지하기 위해 ConfgMap을 생성한다.
+![image](https://github.com/yidaeun39/chatbot/assets/47437659/05ea50f6-b855-4101-919b-6a629fa8a262)
 
-```
-kubectl autoscale deploy pay --min=1 --max=10 --cpu-percent=15
-```
-- CB 에서 했던 방식대로 워크로드를 2분 동안 걸어준다.
-```
-siege -c100 -t120S -r10 --content-type "application/json" 'http://localhost:8081/orders POST {"item": "chicken"}'
-```
-- 오토스케일이 어떻게 되고 있는지 모니터링을 걸어둔다:
-```
-kubectl get deploy pay -w
-```
-- 어느정도 시간이 흐른 후 (약 30초) 스케일 아웃이 벌어지는 것을 확인할 수 있다:
-```
-NAME    DESIRED   CURRENT   UP-TO-DATE   AVAILABLE   AGE
-pay     1         1         1            1           17s
-pay     1         2         1            1           45s
-pay     1         4         1            1           1m
-:
-```
-- siege 의 로그를 보아도 전체적인 성공률이 높아진 것을 확인 할 수 있다. 
-```
-Transactions:		        5078 hits
-Availability:		       92.45 %
-Elapsed time:		       120 secs
-Data transferred:	        0.34 MB
-Response time:		        5.60 secs
-Transaction rate:	       17.15 trans/sec
-Throughput:		        0.01 MB/sec
-Concurrency:		       96.02
-```
+## PVC활용
+- Amazon EFS를 활용하여 스토리지 클래스를 생성한다.
+![image](https://github.com/yidaeun39/chatbot/assets/47437659/b74a7fb4-4f43-4011-83c3-51630c396fea)
+![image](https://github.com/yidaeun39/chatbot/assets/47437659/4b8e6f73-86b2-45ff-a1b6-2888db5168d3)
 
 
 ## 무정지 재배포
