@@ -112,7 +112,7 @@ cd /bin
 ./kafka-console-consumer --bootstrap-server localhost:9092 --topic labshoppubsub  --from-beginning
 
 ```
-- chatbot에 상품을 초기 검색한다. 검색과 동시에 train 서비스에 분석을 위한 동일한 데이터가 생성된 것을 확인 할 수 있다.
+- chatbot에 상품을 초기 검색한다. 검색과 동시에 train 서비스에 분석을 위한 동일한 데이터가 생성된 것을 확인 할 수 있다. 
 ```
 http localhost:8082/chats id=1 productId=001
 http localhost:8083/trains
@@ -120,10 +120,34 @@ http localhost:8083/trains
 ![image](https://github.com/yidaeun39/chatbot/assets/47437659/c5f07b0f-c80f-448d-8871-4cd514fe5c6b)
 ![image](https://github.com/yidaeun39/chatbot/assets/47437659/10bd0a66-612a-45d6-ab45-a26906960b00)
 
+- 
 
 ## Compensation Transaction
-- 사용자가 Chat 서비스에서 상품의 요청 사항 작성 할 경우 Train 서비스 
+- 사용자가 Chat 서비스에서 상품의 요청 사항을 작성 할 경우 Train 서비스에서 해당 요청이 가능한 요청인지 판단한다.
 ```
+  public static void requestChat(Requested requested) {
+      repository().findById(Long.valueOf(requested.getId())).ifPresent(train->{
+          if(requested.getRequestMsg().equals("불가능")){
+              Refused refused = new Refused(train);
+              refused.setRequestType("0"); 
+              refused.publishAfterCommit();
+          }else{
+              train.setRequestCnt(train.getRequestCnt() + 1);
+              repository().save(train);
+          }
+          
+      });
+  }
+```
+- Refused 이벤트가 발생 할 때 changeRequestType을 통해 requsetType을 0으로 변경한다.
+```
+  public static void changeRequestType(Refused refused) {
+      repository().findById(refused.getId()).ifPresent(v ->{
+          // 승인되지 않을 경우 request type을 0으로 변경
+          v.setRequestType("0");
+          repository().save(v);
+      });
+  }
 ```
 
 ## Gateway
