@@ -158,8 +158,9 @@ http localhost:8083/trains
 - 여기서 카프카 토픽 캡처 나오면 될듯
 
 ## Gateway
-- 상단 서비스 목록에서는 언급하지 않았지만 msaez에서 제공하는 gateway 서비스를 통해 트래픽 라우팅 룰을 정의한다.
-- 키알리 캡처
+- Nginx Ingres를 사용하여 단일 진입점을 생성한다.
+![image](https://github.com/yidaeun39/chatbot3/assets/47437659/fea8664c-16d4-46bb-9445-9276ad1e61d3)
+
 
 ## Dashboard
 - 데이터 정합성을 위한 Read Model인 CQRS Dashboard 서비스를 설정한다.
