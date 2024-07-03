@@ -125,8 +125,9 @@ Trained 이벤트 발생시 Create되고, 마케터가 유저정보를 patched �
 http PATCH aff17c33e6470474cbe45e22673d86c5-528551918.ap-southeast-2.elb.amazonaws.com:8080/trains/2 trainId=2
 ```
 ![image](https://github.com/yidaeun39/chatbot/assets/47437659/6e120da3-f21c-4f82-99c8-a61ed53e26b2)
-![image](https://github.com/yidaeun39/chatbot/assets/47437659/8bb28dbd-1e47-48f1-8d92-b9f9ebc6984b)
-![image](https://github.com/yidaeun39/chatbot/assets/47437659/7dba60ab-4415-445a-85fb-6bcd235a0e5c)
+- train 서비스가 종료되어도 대시보드 서비스에서 데이터 확인 가능.
+![image](https://github.com/yidaeun39/chatbot/assets/47437659/ca1ddf58-a08d-469d-982c-5726c02ed16a)
+
 
 *********
 
