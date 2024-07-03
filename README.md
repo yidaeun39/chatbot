@@ -1,4 +1,4 @@
-
+![image](https://github.com/yidaeun39/chatbot/assets/47437659/f3663718-63f0-4f31-9501-a01204d26409)
 # KTDS 3차 Final Assessment 수행 리포트
 
 # Table of contents
@@ -154,20 +154,23 @@ http localhost:8083/trains/1
       });
   }
 ```
-- 여기서 카프카 토픽 캡처 나오면 될듯
+![image](https://github.com/yidaeun39/chatbot3/assets/47437659/3a3c2866-71c0-4482-b475-68a2500118eb)
 
 ## Gateway
 - Nginx Ingres를 사용하여 단일 진입점을 생성한다.
 ![image](https://github.com/yidaeun39/chatbot3/assets/47437659/fea8664c-16d4-46bb-9445-9276ad1e61d3)
-
+- gateway 서비스를 이용하여 LaodBalance로 사용
+![image](https://github.com/yidaeun39/chatbot/assets/47437659/ed62bebf-ab28-4911-9944-f54418f0c2b3)
+![image](https://github.com/yidaeun39/chatbot/assets/47437659/450e749d-e96a-4cd8-89c4-c1a03c052499)
 
 ## Dashboard
 - 데이터 정합성을 위한 Read Model인 CQRS Dashboard 서비스를 설정한다.
 Train 데이터가 생성되며 Create되고, 마케터가 유저정보를 patched 할 때 Update 된다.
 ```
-http PATH http://train:8083 id=1 productId=1 trainId=1
-http PATH http://train:8084 id=1 productId=1 trainId=1
+http PATCH aff17c33e6470474cbe45e22673d86c5-528551918.ap-southeast-2.elb.amazonaws.com:8080/trains/2 trainId=2
 ```
+![image](https://github.com/yidaeun39/chatbot/assets/47437659/8bb28dbd-1e47-48f1-8d92-b9f9ebc6984b)
+![image](https://github.com/yidaeun39/chatbot/assets/47437659/7dba60ab-4415-445a-85fb-6bcd235a0e5c)
 
 *********
 
@@ -233,7 +236,7 @@ chat   Deployment/chat   6%/15%    1         10        10         15m
 
 ## 서비스 메쉬
 - Istio를 통해 안정된 서비스와 배포전략을 시행한다. Istio를 통해 배포된 파드는 sidecar가 injection되어 POD가 (2/2)로 노출되는 것을 확인할 수 있다.
-![image](https://github.com/yidaeun39/chatbot/assets/47437659/4b21d230-a49a-484c-8ed3-a32a8d2a8815)
+![image](https://github.com/yidaeun39/chatbot/assets/47437659/98a7f767-86de-4b99-a43b-7bf75b577a39)
 
 ## Loggregation
 - Kibana Web Admin 접속을 위해서 ID/PW 정보를 미리 수집해둔다.
@@ -242,3 +245,5 @@ id : elastic
 pw : kubectl get secrets --namespace=logging elasticsearch-master-credentials -ojsonpath='{.data.password}' | base64 -d
 ```
 ![image](https://github.com/yidaeun39/chatbot/assets/47437659/6a7e3c64-8051-47d5-9b6f-fcb43ad30807)
+- chatbot namespace를 필터링
+![image](https://github.com/yidaeun39/chatbot3/assets/47437659/0a591e34-3f6d-4a55-a268-be732ee63b55)
