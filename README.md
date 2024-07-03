@@ -109,10 +109,6 @@ public class Chat {
 ## Saga
 - Event Shunting 비동기 호출을 위한 EDA로 클러스터 내에 Apache Kafka를 설치한다. 사용자가 chat 서비스에 상품을 검색/질문/요청 했을 때 이벤트 드리븐하게 로직이 실행되고, 이벤트가 카프카에서 확인된다.
 ```
-helm repo add bitnami https://charts.bitnami.com/bitnami
-helm repo update
-helm install my-kafka bitnami/kafka --version 23.0.5
-
 docker-compose exec -it kafka /bin/bash
 cd /bin
 
@@ -121,12 +117,15 @@ cd /bin
 ```
 - chatbot에 상품을 초기 검색한다. 검색과 동시에 train 서비스에 분석을 위한 동일한 데이터가 생성된 것을 확인 할 수 있다. 
 ```
-http localhost:8082/chats id=1 productId=001
-http localhost:8083/trains
+http localhost:8082/chats id=1 productId=001 userId=39
+http localhost:8083/trains/1
 ```
 ![image](https://github.com/yidaeun39/chatbot/assets/47437659/c5f07b0f-c80f-448d-8871-4cd514fe5c6b)
 ![image](https://github.com/yidaeun39/chatbot/assets/47437659/10bd0a66-612a-45d6-ab45-a26906960b00)
- 
+- 생성된 상품 데이터로 질문 작성 시 질문 train 서비스의 질문 카운트가 올라가는 것을 확인 할 수 있다.
+![image](https://github.com/yidaeun39/chatbot3/assets/47437659/1dcd2acf-50ab-4cff-a9d3-acb9061f217e)
+- kafka Topic 확인
+![image](https://github.com/yidaeun39/chatbot3/assets/47437659/be4b568e-93e3-47a0-a1c6-48e96cfb71b1)
 
 ## Compensation Transaction
 - 사용자가 Chat 서비스에서 상품의 요청 사항을 작성 할 경우 Train 서비스에서 해당 요청이 가능한 요청인지 판단한다.
